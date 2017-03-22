@@ -220,7 +220,7 @@ class mall(object):
     def set_weight_end(self, end):
         """set right path from start to end
         
-        e.g. from 4 to 9:
+        e.g. from 9 to E:
 
         1   2   3   (4)   5
 
