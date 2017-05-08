@@ -74,7 +74,6 @@ class mall(object):
         self.num = self.row * self.col
         self.width = self.col + 2
         self.height = 2 * self.row + 1
-        rd.seed(1)
         self.patten = sorted(rd.sample(np.arange(self.num + 1)[1:], self.length))
         print self.patten
 
@@ -85,12 +84,13 @@ class mall(object):
         strategy = []
         left, right = -1, -1
         for item in self.patten:
-            if item/self.col == left/self.col:
+            if (item-1)/self.col == (left-1)/self.col:
+                self.set_weight_inline(right, item)
                 right = item
             else:
                 if left != -1:
-                    left_path = left%self.col + item%self.col
-                    right_path = 2*self.col + 2 - right%self.col - item%self.col
+                    left_path = (left-1)%self.col + (item-1)%self.col + 2
+                    right_path = 2*self.col - (right-1)%self.col - (item-1)%self.col
                     if left_path < right_path:
                         self.set_weight_left(left, item)
                     elif left_path > right_path:
@@ -116,8 +116,8 @@ class mall(object):
         
         """
         print 'Set left path from {} to {}'.format(start, end)
-        row_start = (start-1)/self.col + 1
-        row_end = (end-1)/self.col + 1
+        row_start = (start-1)/self.col
+        row_end = (end-1)/self.col
         col_start = (start-1)%self.col + 1
         col_end = (end-1)%self.col + 1
 
@@ -146,8 +146,8 @@ class mall(object):
 
         """
         print 'Set right path from {} to {}'.format(start, end)
-        row_start = (start-1)/self.col + 1
-        row_end = (end-1)/self.col + 1
+        row_start = (start-1)/self.col
+        row_end = (end-1)/self.col
         col_start = (start-1)%self.col + 1
         col_end = (end-1)%self.col + 1
         for row in range(row_start, row_end+1):
@@ -175,8 +175,8 @@ class mall(object):
 
         """
         print 'Set both path from {} to {}'.format(start, end)
-        row_start = (start-1)/self.col + 1
-        row_end = (end-1)/self.col + 1
+        row_start = (start-1)/self.col
+        row_end = (end-1)/self.col
         col_start = (start-1)%self.col + 1
         col_end = (end-1)%self.col + 1
         for row in range(row_start, row_end+1):
@@ -194,6 +194,29 @@ class mall(object):
         print self.weights
 
 
+    def set_weight_inline(self, start, end):
+        """set both path from start to end
+
+        e.g. from 2 to 4:
+
+        1   (2)---3---(4)   5
+                          
+        6    7    8    9    10
+        
+        E
+
+        """
+        print 'Set both path from {} to {}'.format(start, end)
+        row = (start-1)/self.col
+        col_start = (start-1)%self.col + 1
+        print col_start
+        col_end = (end-1)%self.col + 1
+        print col_end
+        for col in range(col_start,col_end):
+            self.weights[row][col] += 1
+        print self.weights
+
+
     def set_weight_start(self, start):
         """set right path from start to end
         
@@ -206,7 +229,8 @@ class mall(object):
         E
 
         """
-        row_start = (start-1)/self.col + 1
+        print 'Set both path from E to {}'.format(start)
+        row_start = (start-1)/self.col
         col_start = (start-1)%self.col + 1
         for row in range(row_start, self.row):
             if row == row_start:
@@ -229,7 +253,8 @@ class mall(object):
         E
 
         """
-        row_end = (end-1)/self.col + 1
+        print 'Set both path from E to {}'.format(end)
+        row_end = (end-1)/self.col
         col_end = (end-1)%self.col + 1
         for row in range(row_end, self.row):
             if row == row_end:
